@@ -434,7 +434,7 @@
             y: canvas.height - 60,
             width: 50,
             height: 50,
-            speed: 16  // Vitesse doublée pour plus de réactivité
+            speed: 16  // Vitesse doublée
         };
 
         let mouseX = hedgehog.x;
@@ -447,8 +447,8 @@
         class Pipe {
             constructor() {
                 const rand = Math.random();
-                if (rand < 0.1) {
-                    this.isBomb = true;
+                if (rand < 0.2) {
+                    this.isBomb = true;  // 20% de bombes
                     this.width = 20;
                     this.height = 20;
                 } else if (rand < 0.3) {
@@ -909,8 +909,7 @@
             gameLoop();
         }
 
-                // Dessiner le fond avec dégradé bleu clair vers blanc
-        function drawBackground() {
+                function drawBackground() {
             const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             bgGradient.addColorStop(0, '#87CEEB');
             bgGradient.addColorStop(1, '#FFFFFF');
@@ -933,7 +932,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBackground();
 
-            if (Math.random() < 0.03) {
+            if (Math.random() < 0.06) {  // Taux d'apparition doublé
                 pipes.push(new Pipe());
             }
 
