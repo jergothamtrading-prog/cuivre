@@ -119,7 +119,7 @@
         #gameCanvas {
             width: 100%;
             height: 400px;
-            background: linear-gradient(180deg, #abbdff 0%, #FFFFFF 100%);
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
             border: 2px solid var(--color-primary);
             border-radius: 8px;
             display: block;
@@ -669,7 +669,10 @@
         }
 
         function drawBomb(x, y) {
-            ctx.fillStyle = '#1a1a1a';
+            const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        bgGradient.addColorStop(0, '#87CEEB');
+        bgGradient.addColorStop(1, '#FFFFFF');
+        ctx.fillStyle = bgGradient;
             ctx.beginPath();
             ctx.arc(0, 0, 8, 0, Math.PI * 2);
             ctx.fill();
@@ -772,7 +775,10 @@
             ctx.ellipse(x + 10, y - 12, 4, 6, -0.2, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#000';
+            const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        bgGradient.addColorStop(0, '#87CEEB');
+        bgGradient.addColorStop(1, '#FFFFFF');
+        ctx.fillStyle = bgGradient;
             ctx.beginPath();
             ctx.arc(x + 20, y - 6, 4, 0, Math.PI * 2);
             ctx.fill();
