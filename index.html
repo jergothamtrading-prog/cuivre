@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chourave le Cuivre Mon Cousin 🦔🔧</title>
+    <style>
+        :root {
+            --color-primary: #2180A8;
+            --color-primary-hover: #1A7490;
+            --color-bg: #F5F5F1;
+            --color-text: #1F2121;
+            --color-success: #21808D;
+            --color-error: #C0152F;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .android-block {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .android-block.show {
+            display: flex;
+        }
+
+        .android-message {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .android-message h2 {
+            color: #C0152F;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .android-message p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: var(--color-text);
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid #E5E5E5;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 20px;
+            cursor: none;
+            image-rendering: crisp-edges;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-primary);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .info p {
+            margin-bottom: 8px;
+        }
+
+        .controls-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .game-over-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .game-over-popup.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-over-box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .game-over-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(-30px); }
+            100% { transform: translateY(0); }
+        }
+
+        .game-over-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #C0152F;
+            margin-bottom: 15px;
+        }
+
+        .game-over-subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .game-over-stats {
+            background: #F5F5F1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .game-over-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .game-over-stat:last-child {
+            margin-bottom: 0;
+        }
+
+        .game-over-stat-label {
+            color: #666;
+        }
+
+        .game-over-stat-value {
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .game-over-button {
+            background: var(--color-primary);
+            color: white;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .game-over-button:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .game-over-button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #gameCanvas {
+                height: 300px;
+            }
+
+            .game-over-emoji {
+                font-size: 60px;
+            }
+
+            .game-over-title {
+                font-size: 24px;
+            }
+
+            .game-over-subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="android-block" id="androidBlock">
+        <div class="android-message">
+            <h2>⚠️ Accès Réservé</h2>
+            <p>Ce jeu n'est disponible que sur iOS et navigateurs de bureau.</p>
+            <p>Utilise un iPhone ou un ordinateur pour jouer! 🖥️📱</p>
+        </div>
+    </div>
+
+    <div class="game-over-popup" id="gameOverPopup">
+        <div class="game-over-box">
+            <div class="game-over-emoji" id="gameOverEmoji">💣</div>
+            <div class="game-over-title" id="gameOverTitle">BOOOOOM!</div>
+            <div class="game-over-subtitle" id="gameOverSubtitle">T'as touché une BOMBE!</div>
+            
+            <div class="game-over-stats">
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">🏆 Score Final</span>
+                    <span class="game-over-stat-value" id="gameOverScore">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">🔧 Tuyaux Attrapés</span>
+                    <span class="game-over-stat-value" id="gameOverCaught">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">⏱️ Temps Restant</span>
+                    <span class="game-over-stat-value" id="gameOverTime">-</span>
+                </div>
+            </div>
+
+            <button class="game-over-button" onclick="closeGameOverAndRestart()">▶ Rejouer</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🦔 Chourave le Cuivre Mon Cousin! 🔧</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Temps</div>
+                    <div class="stat-value" id="time">30s</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Tuyaux</div>
+                    <div class="stat-value" id="caught">0</div>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="controls">
+            <div class="button-group">
+                <button class="btn-primary" id="startBtn" onclick="startGame()">▶ Commencer</button>
+                <button class="btn-primary" id="pauseBtn" onclick="togglePause()" disabled>⏸ Pause</button>
+                <button class="btn-primary" id="resetBtn" onclick="resetGame()">↻ Réinitialiser</button>
+            </div>
+        </div>
+
+        <div class="info">
+            <p><strong>📋 Comment jouer:</strong></p>
+            <p class="controls-info">• Déplace la souris pour contrôler le hérisson</p>
+            <p class="controls-info">• Attrape les tuyaux en cuivre et accessoires</p>
+            <p class="controls-info">• ⚠️ ÉVITE LES BOMBES ou tu perds!</p>
+            <p class="controls-info">• Tu as 30 secondes!</p>
+            <p class="controls-info">• Plus vite tu attrapes, plus tu marques de points 🎯</p>
+        </div>
+    </div>
+
+    <script>
+        function detectAndroid() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(ua)) {
+                document.getElementById('androidBlock').classList.add('show');
+                return true;
+            }
+            return false;
+        }
+
+        if (detectAndroid()) {
+            throw new Error('Android blocked');
+        }
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false, antialias: false });
+
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameTime = 30;
+        let score = 0;
+        let caught = 0;
+        let timeLeft = gameTime;
+        let gameTimer = null;
+        let lastFrameTime = 0;
+        const targetFPS = 60;
+
+        const hedgehog = {
+            x: canvas.width / 2,
+            y: canvas.height - 60,
+            width: 50,
+            height: 50,
+            speed: 8
+        };
+
+        let mouseX = hedgehog.x;
+        let mouseY = hedgehog.y;
+        let pipes = [];
+
+        const PIPE_TYPES = ['straight', 'elbow', 't-joint', 'angle45', 'u-bend'];
+        const ACCESSORY_TYPES = ['bra', 'panties'];
+
+        class Pipe {
+            constructor() {
+                const rand = Math.random();
+                if (rand < 0.1) {
+                    this.isBomb = true;
+                    this.width = 20;
+                    this.height = 20;
+                } else if (rand < 0.3) {
+                    this.isAccessory = true;
+                    this.accessoryType = ACCESSORY_TYPES[Math.floor(Math.random() * ACCESSORY_TYPES.length)];
+                    this.width = 25;
+                    this.height = 20;
+                } else {
+                    this.type = PIPE_TYPES[Math.floor(Math.random() * PIPE_TYPES.length)];
+                    this.width = this.type === 'straight' ? 18 : 30;
+                    this.height = this.type === 'straight' ? 70 : 35;
+                }
+                
+                this.x = Math.random() * (canvas.width - this.width);
+                this.y = -this.height;
+                this.speed = 3.2 + Math.random() * 2.5;
+                this.rotation = Math.random() * 0.2 - 0.1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+                ctx.rotate(this.rotation);
+
+                if (this.isBomb) {
+                    drawBomb(0, 0);
+                } else if (this.isAccessory) {
+                    drawCopperAccessory(0, 0, this.accessoryType);
+                } else {
+                    switch(this.type) {
+                        case 'straight':
+                            this.drawStraightRealistic();
+                            break;
+                        case 'elbow':
+                            this.drawElbow();
+                            break;
+                        case 't-joint':
+                            this.drawTJoint();
+                            break;
+                        case 'angle45':
+                            this.drawAngle45();
+                            break;
+                        case 'u-bend':
+                            this.drawUBend();
+                            break;
+                    }
+                }
+
+                ctx.restore();
+            }
+
+            drawStraightRealistic() {
+                const w = this.width / 2;
+                const h = this.height / 2;
+                
+                const copperGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, w);
+                copperGrad.addColorStop(0, '#E09556');
+                copperGrad.addColorStop(0.4, '#CD7F32');
+                copperGrad.addColorStop(0.7, '#B87333');
+                copperGrad.addColorStop(1, '#8B5A2B');
+                
+                ctx.fillStyle = copperGrad;
+                ctx.fillRect(-w, -h, this.width, this.height);
+                
+                const highlight = ctx.createLinearGradient(-w, 0, -w + 4, 0);
+                highlight.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+                highlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = highlight;
+                ctx.fillRect(-w, -h, 4, this.height);
+                
+                ctx.fillStyle = '#8B5A2B';
+                ctx.beginPath();
+                ctx.ellipse(0, -h, w, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.beginPath();
+                ctx.ellipse(0, -h + 1, w - 2, 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#CD7F32';
+                ctx.beginPath();
+                ctx.ellipse(0, h, w, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255, 200, 150, 0.5)';
+                ctx.beginPath();
+                ctx.ellipse(0, h, w - 1, 2, 0, 0, Math.PI);
+                ctx.fill();
+            }
+
+            drawElbow() {
+                const r = 12;
+                ctx.fillStyle = '#B87333';
+                ctx.beginPath();
+                ctx.arc(-8, -8, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillRect(-8, -8 + r, 16, 12);
+                ctx.beginPath();
+                ctx.arc(-8, 4, r, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(-8, -8, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(-8, -8, r, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(-8, 4, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            drawTJoint() {
+                const r = 10;
+                ctx.fillStyle = '#B87333';
+                ctx.beginPath();
+                ctx.arc(0, -10, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillRect(-r, -10, this.width, 20);
+                ctx.beginPath();
+                ctx.arc(0, 10, r, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(-5, -10, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(0, -10, r, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(0, 10, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            drawAngle45() {
+                const grad = ctx.createLinearGradient(-12, -12, 12, 12);
+                grad.addColorStop(0, '#8B4513');
+                grad.addColorStop(0.5, '#CD853F');
+                grad.addColorStop(1, '#8B4513');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.moveTo(-10, -12);
+                ctx.lineTo(12, 10);
+                ctx.lineTo(10, 12);
+                ctx.lineTo(-12, -10);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.moveTo(-8, -10);
+                ctx.lineTo(10, 8);
+                ctx.lineTo(8, 10);
+                ctx.lineTo(-10, -8);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(-10, -12);
+                ctx.lineTo(12, 10);
+                ctx.lineTo(10, 12);
+                ctx.lineTo(-12, -10);
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            drawUBend() {
+                const r = 10;
+                ctx.fillStyle = '#B87333';
+                ctx.beginPath();
+                ctx.arc(-8, 0, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillRect(-8, -r, 16, r * 2);
+                ctx.beginPath();
+                ctx.arc(8, 0, r, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(-6, -4, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(6, -4, 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(-8, 0, r, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(8, 0, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            update() {
+                this.y += this.speed;
+            }
+
+            isOffScreen() {
+                return this.y > canvas.height;
+            }
+
+            isColliding(hedgehog) {
+                return this.x < hedgehog.x + hedgehog.width &&
+                       this.x + this.width > hedgehog.x &&
+                       this.y < hedgehog.y + hedgehog.height &&
+                       this.y + this.height > hedgehog.y;
+            }
+        }
+
+        function drawBomb(x, y) {
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.beginPath();
+            ctx.arc(-3, -3, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#D2691E';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, -8);
+            ctx.quadraticCurveTo(-2, -12, 0, -16);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#FF6347';
+            ctx.beginPath();
+            ctx.arc(0, -16, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawHedgehog(x, y) {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + 24, 26, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            const bodyGrad = ctx.createRadialGradient(x - 12, y - 2, 5, x - 5, y, 22);
+            bodyGrad.addColorStop(0, '#D4B896');
+            bodyGrad.addColorStop(0.6, '#C9A87B');
+            bodyGrad.addColorStop(1, '#A08968');
+            ctx.fillStyle = bodyGrad;
+            ctx.beginPath();
+            ctx.ellipse(x - 5, y, 22, 16, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#F5E6D3';
+            ctx.beginPath();
+            ctx.ellipse(x - 2, y + 8, 16, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x - 6, y + 8, 8, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            const spikeColors = ['#8B7355', '#A08968', '#6B5E4F'];
+            for (let i = 0; i < 18; i++) {
+                const angle = (i / 18) * Math.PI + Math.PI * 0.9;
+                const distance = 18;
+                const spikeX = x - 8 + Math.cos(angle) * distance;
+                const spikeY = y - 2 + Math.sin(angle) * distance;
+                
+                ctx.save();
+                ctx.translate(spikeX, spikeY);
+                ctx.rotate(angle - Math.PI / 2);
+                
+                const spikeGrad = ctx.createLinearGradient(0, -8, 0, 8);
+                spikeGrad.addColorStop(0, spikeColors[i % 3]);
+                spikeGrad.addColorStop(0.5, '#D4B896');
+                spikeGrad.addColorStop(1, spikeColors[(i + 1) % 3]);
+                ctx.fillStyle = spikeGrad;
+                
+                ctx.beginPath();
+                ctx.moveTo(0, -10);
+                ctx.quadraticCurveTo(-4, -2, -2, 6);
+                ctx.quadraticCurveTo(0, 8, 2, 6);
+                ctx.quadraticCurveTo(4, -2, 0, -10);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+
+            ctx.fillStyle = '#E8D4B8';
+            ctx.beginPath();
+            ctx.ellipse(x + 18, y - 2, 13, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            const snoutGrad = ctx.createRadialGradient(x + 28, y + 4, 2, x + 28, y + 4, 10);
+            snoutGrad.addColorStop(0, '#F5E6D3');
+            snoutGrad.addColorStop(1, '#E8D4B8');
+            ctx.fillStyle = snoutGrad;
+            ctx.beginPath();
+            ctx.ellipse(x + 28, y + 4, 10, 7, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#C9A87B';
+            ctx.beginPath();
+            ctx.ellipse(x + 10, y - 14, 7, 9, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#F5E6D3';
+            ctx.beginPath();
+            ctx.ellipse(x + 10, y - 12, 4, 6, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(x + 20, y - 6, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#FFF';
+            ctx.beginPath();
+            ctx.arc(x + 21, y - 7, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#2C2416';
+            ctx.beginPath();
+            ctx.arc(x + 34, y + 5, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#C9A87B';
+            ctx.beginPath();
+            ctx.ellipse(x + 6, y + 18, 5, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(x - 16, y + 18, 5, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            const pantiesGrad = ctx.createRadialGradient(x - 2, y + 16, 2, x - 2, y + 16, 14);
+            pantiesGrad.addColorStop(0, '#E09556');
+            pantiesGrad.addColorStop(0.5, '#CD7F32');
+            pantiesGrad.addColorStop(1, '#B87333');
+            ctx.fillStyle = pantiesGrad;
+            ctx.beginPath();
+            ctx.ellipse(x - 2, y + 16, 14, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#8B5A2B';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.ellipse(x - 2, y + 16, 14, 8, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#8B5A2B';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 10; i++) {
+                const px = x - 14 + i * 3;
+                ctx.beginPath();
+                ctx.moveTo(px, y + 22);
+                ctx.lineTo(px + 1, y + 24);
+                ctx.stroke();
+            }
+            
+            ctx.fillStyle = '#E09556';
+            ctx.fillRect(x - 16, y + 14, 28, 2);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.fillRect(x - 10, y + 12, 18, 2);
+        }
+
+        function drawCopperAccessory(x, y, type) {
+            if (type === 'bra') {
+                ctx.fillStyle = '#B87333';
+                ctx.beginPath();
+                ctx.ellipse(x - 8, y, 6, 5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(x + 8, y, 6, 5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillRect(x - 6, y + 3, 12, 2);
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.beginPath();
+                ctx.ellipse(x - 8, y - 2, 2, 1.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(x + 8, y - 2, 2, 1.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillStyle = '#B87333';
+                ctx.beginPath();
+                ctx.ellipse(x, y, 11, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#8B5A2B';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(x - 9, y - 2);
+                ctx.lineTo(x - 9, y + 2);
+                ctx.moveTo(x + 9, y - 2);
+                ctx.lineTo(x + 9, y + 2);
+                ctx.stroke();
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.fillRect(x - 8, y - 2, 16, 2);
+            }
+        }
+
+        function updateHedgehog() {
+            const dx = mouseX - hedgehog.x;
+            const dy = mouseY - hedgehog.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > hedgehog.speed) {
+                hedgehog.x += (dx / distance) * hedgehog.speed;
+                hedgehog.y += (dy / distance) * hedgehog.speed;
+            }
+
+            hedgehog.x = Math.max(hedgehog.width / 2, Math.min(canvas.width - hedgehog.width / 2, hedgehog.x));
+            hedgehog.y = Math.max(hedgehog.height / 2, Math.min(canvas.height - hedgehog.height / 2, hedgehog.y));
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            mouseX = (touch.clientX - rect.left) * (canvas.width / rect.width);
+            mouseY = (touch.clientY - rect.top) * (canvas.height / rect.height);
+        });
+
+        function startGame() {
+            if (gameRunning) return;
+            gameRunning = true;
+            gamePaused = false;
+            timeLeft = gameTime;
+            score = 0;
+            caught = 0;
+            pipes = [];
+
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+
+            gameTimer = setInterval(updateTimer, 100);
+            gameLoop();
+        }
+
+        function gameLoop(currentTime) {
+            if (!gameRunning || gamePaused) {
+                if (gameRunning) requestAnimationFrame(gameLoop);
+                return;
+            }
+
+            if (lastFrameTime && (currentTime - lastFrameTime) < (1000 / targetFPS)) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            lastFrameTime = currentTime;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.03) {
+                pipes.push(new Pipe());
+            }
+
+            for (let i = pipes.length - 1; i >= 0; i--) {
+                pipes[i].update();
+                pipes[i].draw();
+
+                if (pipes[i].isColliding(hedgehog)) {
+                    if (pipes[i].isBomb) {
+                        endGame(true);
+                    } else {
+                        score += Math.max(10, Math.floor(100 - timeLeft * 2));
+                        caught++;
+                        document.getElementById('score').textContent = score;
+                        document.getElementById('caught').textContent = caught;
+                    }
+                    pipes.splice(i, 1);
+                } else if (pipes[i].isOffScreen()) {
+                    pipes.splice(i, 1);
+                }
+            }
+
+            updateHedgehog();
+            drawHedgehog(hedgehog.x, hedgehog.y);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateTimer() {
+            if (!gameRunning || gamePaused) return;
+
+            timeLeft -= 0.1;
+            const seconds = Math.ceil(timeLeft);
+            document.getElementById('time').textContent = seconds + 's';
+
+            if (timeLeft <= 0) {
+                endGame(false);
+            }
+        }
+
+        function endGame(isBomb = false) {
+            gameRunning = false;
+            clearInterval(gameTimer);
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            showGameOverPopup(isBomb);
+        }
+
+        function showGameOverPopup(isBomb = true) {
+            document.getElementById('gameOverScore').textContent = score;
+            document.getElementById('gameOverCaught').textContent = caught;
+            document.getElementById('gameOverTime').textContent = Math.max(0, Math.ceil(timeLeft)) + 's';
+
+            if (isBomb) {
+                document.getElementById('gameOverEmoji').textContent = '💣';
+                document.getElementById('gameOverTitle').textContent = 'BOOOOOM!';
+                document.getElementById('gameOverSubtitle').textContent = 'T\'as touché une BOMBE!';
+            } else {
+                document.getElementById('gameOverEmoji').textContent = '⏱️';
+                document.getElementById('gameOverTitle').textContent = 'Temps Écoulé!';
+                document.getElementById('gameOverSubtitle').textContent = 'La partie est terminée!';
+            }
+
+            document.getElementById('gameOverPopup').classList.add('show');
+        }
+
+        function closeGameOverAndRestart() {
+            document.getElementById('gameOverPopup').classList.remove('show');
+            resetGame();
+        }
+
+        function togglePause() {
+            if (!gameRunning) return;
+            gamePaused = !gamePaused;
+            document.getElementById('pauseBtn').textContent = gamePaused ? '▶ Reprendre' : '⏸ Pause';
+            if (!gamePaused) gameLoop();
+        }
+
+        function resetGame() {
+            gameRunning = false;
+            gamePaused = false;
+            clearInterval(gameTimer);
+            timeLeft = gameTime;
+            score = 0;
+            caught = 0;
+            pipes = [];
+            hedgehog.x = canvas.width / 2;
+            hedgehog.y = canvas.height - 60;
+
+            document.getElementById('score').textContent = '0';
+            document.getElementById('time').textContent = '30s';
+            document.getElementById('caught').textContent = '0';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('pauseBtn').textContent = '⏸ Pause';
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawHedgehog(hedgehog.x, hedgehog.y);
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 400;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawHedgehog(hedgehog.x, hedgehog.y);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+</body>
+</html>
