@@ -669,10 +669,7 @@
         }
 
         function drawBomb(x, y) {
-            const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        bgGradient.addColorStop(0, '#87CEEB');
-        bgGradient.addColorStop(1, '#FFFFFF');
-        ctx.fillStyle = bgGradient;
+            ctx.fillStyle = '#1a1a1a';
             ctx.beginPath();
             ctx.arc(0, 0, 8, 0, Math.PI * 2);
             ctx.fill();
@@ -775,10 +772,7 @@
             ctx.ellipse(x + 10, y - 12, 4, 6, -0.2, 0, Math.PI * 2);
             ctx.fill();
 
-            const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        bgGradient.addColorStop(0, '#87CEEB');
-        bgGradient.addColorStop(1, '#FFFFFF');
-        ctx.fillStyle = bgGradient;
+            ctx.fillStyle = '#000';
             ctx.beginPath();
             ctx.arc(x + 20, y - 6, 4, 0, Math.PI * 2);
             ctx.fill();
